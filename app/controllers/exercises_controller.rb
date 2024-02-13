@@ -8,7 +8,8 @@ class ExercisesController < ApplicationController
   def exercise2
     # 【要件】注文されていない料理を提供しているすべてのお店を返すこと
     #   * left_outer_joinsを使うこと
-    @shops = Shop.left_outer_joins(foods: :order_foods).where(order_foods: {food_id: nil }).uniq
+    no_order_foods = Food.left_outer_joins(:order_foods).where(order_foods: {food_id: nil })
+    @shops = Shop.left_outer_joins(:foods).where(foods: no_order_foods).uniq
   end
 
   def exercise3 
