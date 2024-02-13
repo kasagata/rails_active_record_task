@@ -8,9 +8,18 @@ class ExercisesController < ApplicationController
   def exercise2
     # 【要件】注文されていない料理を提供しているすべてのお店を返すこと
     #   * left_outer_joinsを使うこと
-    no_order_foods = Food.left_outer_joins(:order_foods).where(order_foods: {food_id: nil })
-    @shops = Shop.left_outer_joins(:foods).where(foods: no_order_foods).uniq
+    @shops = Shop.left_outer_joins(foods: :order_foods).where(order_foods: {food_id: nil })
+    SELECT "shops".* FROM "shops" 
+    LEFT OUTER JOIN "foods" 
+    ON "foods"."shop_id" = "shops"."id" 
+    LEFT OUTER JOIN "order_foods" 
+    ON "order_foods"."food_id" = "foods"."id" 
+    WHERE "order_foods"."food_id" IS NULL
   end
+
+  no_order_foods = Food.left_outer_joins(:order_foods).where(order_foods: {food_id: nil })
+  @shops = Shop.left_outer_joins(:foods).where(foods: no_order_foods).uniq
+  SELECT "shops".* FROM "shops" LEFT OUTER JOIN "foods" ON "foods"."shop_id" = "shops"."id" WHERE "shops"."id" IN (SELECT "foods"."shop_id" FROM "foods" LEFT OUTER JOIN "order_foods" ON "order_foods"."food_id" = "foods"."id" WHERE "order_foods"."food_id" IS NULL)
 
   def exercise3 
     # 【要件】配達先の一番多い住所を返すこと
